@@ -1,0 +1,161 @@
+////////////////////////////////////////////////////////////////////////////////
+function deleteWebhook() {
+  var url = 'https://api.telegram.org/bot' + token + '/deleteWebhook';
+  return UrlFetchApp.fetch(url);
+}
+////////////////////////////////////////////////////////////////////////////////
+function getWebhook() {
+  var url = 'https://api.telegram.org/bot' + token + "/getWebhookInfo";
+  return UrlFetchApp.fetch(url);
+}
+////////////////////////////////////////////////////////////////////////////////
+// DEV WEBHOOK - expires in an hour and needs to be reset
+function setDevWebhook(webAppUrl) {
+  var url = 'https://api.telegram.org/bot'
+            + token
+            + '/setWebhook?url='
+            + webAppUrl
+            + '?access_token=' 
+            + ScriptApp.getOAuthToken();
+  return UrlFetchApp.fetch(url);
+}
+////////////////////////////////////////////////////////////////////////////////
+// PROD WEBHOOK - permanent and uses versioned (not latest) code
+function setProdWebhook(webAppUrl) {
+  var url = 'https://api.telegram.org/bot'
+            + token
+            + '/setWebhook?url='
+            + webAppUrl;
+  return UrlFetchApp.fetch(url);
+}
+////////////////////////////////////////////////////////////////////////////////
+function sendTelegram(chatID, msg, buttons) {
+  var k = (buttons == undefined) ? encodeURIComponent(JSON.stringify({remove_keyboard:true})) : makeKeyboard(buttons);
+  var url = 'https://api.telegram.org/bot' 
+            + token 
+            + '/sendMessage?chat_id=' 
+            + chatID 
+            + '&text=' 
+            + encodeURIComponent(msg) 
+            + '&parse_mode=Markdown&reply_markup=' 
+            + k;
+  return UrlFetchApp.fetch(url);
+}
+////////////////////////////////////////////////////////////////////////////////
+function sendTelegramInlineKeys(chatID, msg, k, shortUrl) {
+  var msgCoded = encodeURIComponent(msg);
+  var url = 'https://api.telegram.org/bot' 
+            + token 
+            + '/sendMessage?chat_id=' 
+            + chatID 
+            + '&text=' 
+            + encodeURIComponent(msg) 
+            + '&parse_mode=Markdown&reply_markup=' 
+            + k;
+  shortUrl = (shortUrl) ? shortenUrl(url) : url;  
+  return UrlFetchApp.fetch(shortUrl);
+}
+////////////////////////////////////////////////////////////////////////////////
+function sendTelegramChatAction_(chatID, action) { // typing for text messages; upload_document for general files
+  var url = 'https://api.telegram.org/bot' 
+            + token 
+            + '/sendChatAction?chat_id=' 
+            + chatID 
+            + '&action=' 
+            + action; 
+  return UrlFetchApp.fetch(url);
+}
+////////////////////////////////////////////////////////////////////////////////
+function answerCallback(callbackQueryID) {
+  var url = 'https://api.telegram.org/bot' 
+            + token 
+            + '/answerCallbackQuery?callback_query_id=' 
+            + callbackQueryID;
+  return UrlFetchApp.fetch(url);
+}
+////////////////////////////////////////////////////////////////////////////////
+function deleteMessage(chatID, msgID) {
+  var url = 'https://api.telegram.org/bot' 
+            + token 
+            + '/deleteMessage?chat_id=' 
+            + chatID 
+            + '&message_id=' 
+            + msgID;
+  return UrlFetchApp.fetch(url);
+}
+////////////////////////////////////////////////////////////////////////////////
+function updateMessage(chatID, msgID, msg, k) {
+  var url = 'https://api.telegram.org/bot' 
+            + token 
+            + '/editMessageText?chat_id=' 
+            + chatID 
+            + '&message_id=' 
+            + msgID 
+            + '&text=' 
+            + encodeURIComponent(msg) 
+            + '&reply_markup='
+            + k;
+  return UrlFetchApp.fetch(url);
+}
+////////////////////////////////////////////////////////////////////////////////
+function updateInlineReplyMarkup(chatID, msgID, k) {
+  var url = 'https://api.telegram.org/bot' 
+            + token 
+            + '/editMessageReplyMarkup?chat_id=' 
+            + chatID 
+            + '&message_id=' 
+            + msgID
+            + '&reply_markup='
+            + k;
+  return UrlFetchApp.fetch(url);
+}
+////////////////////////////////////////////////////////////////////////////////
+function sendSticker(chatID, stickerID) {
+  var url = 'https://api.telegram.org/bot' 
+            + token 
+            + '/sendSticker?chat_id=' 
+            + chatID 
+            + '&sticker=' 
+            + stickerID;
+return UrlFetchApp.fetch(url); 
+}
+////////////////////////////////////////////////////////////////////////////////
+function sendPhoto(chatID, photoID) {
+  var url = 'https://api.telegram.org/bot' 
+            + token 
+            + '/sendPhoto?chat_id=' 
+            + chatID 
+            + '&photo=' 
+            + photoID;
+  return UrlFetchApp.fetch(url); 
+}
+////////////////////////////////////////////////////////////////////////////////
+function sendGoogleDocument(chatID, fileId, caption) {
+  var url = 'https://api.telegram.org/bot' 
+            + token 
+            + '/sendDocument?chat_id=' 
+            + chatID 
+            + '&document=https://docs.google.com/uc?id=' 
+            + fileId 
+            + '&parse_mode=Markdown&reply_markup=' 
+            + encodeURIComponent(JSON.stringify({remove_keyboard:true}));
+  if (caption) {url += '&caption=' + encodeURIComponent(caption);}
+  return UrlFetchApp.fetch(url);
+}
+////////////////////////////////////////////////////////////////////////////////
+/*
+  var media = '[{"media":"FILEID#1","type":"photo"},' +
+               '{"media":"FILEID#2","type":"photo"},' +
+               '{"media":"FILEID#3","type":"photo"},' +
+               '{"media":"FILEID#4","type":"photo"}]';
+*/
+function sendTelegram_withAlbum_(chatID, media) {
+  media = encodeURIComponent(media);
+  var url = 'https://api.telegram.org/bot' 
+            + token 
+            + '/sendMediaGroup?chat_id=' 
+            + chatID 
+            + '&media=' 
+            + encodeURIComponent(media);
+  return UrlFetchApp.fetch(url);
+}
