@@ -29,6 +29,7 @@ function setProdWebhook(webAppUrl) {
   return UrlFetchApp.fetch(url);
 }
 ////////////////////////////////////////////////////////////////////////////////
+// buttons = [['A', 'B'], ['C', 'D']];
 function sendTelegram(chatID, msg, buttons) {
   var k = (buttons == undefined) ? encodeURIComponent(JSON.stringify({remove_keyboard:true})) : makeKeyboard(buttons);
   var url = 'https://api.telegram.org/bot' 
@@ -40,6 +41,16 @@ function sendTelegram(chatID, msg, buttons) {
             + '&parse_mode=Markdown&reply_markup=' 
             + k;
   return UrlFetchApp.fetch(url);
+}
+////////////////////////////////////////////////////////////////////////////////
+function makeKeyboard(buttons) {
+  var keyBoard = {
+    keyboard: buttons,
+    resize_keyboard:true,
+    one_time_keyboard:true
+  };
+  var k = encodeURIComponent(JSON.stringify(keyBoard))
+  return k;
 }
 ////////////////////////////////////////////////////////////////////////////////
 function sendTelegramInlineKeys(chatID, msg, k, shortUrl) {
